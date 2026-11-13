@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>港風天堂生存 RPG</title>
+    <style>
+        * { box-sizing: border-box; user-select: none; }
+        body { margin: 0; padding: 0; background: linear-gradient(135deg, #0f051d 0%, #1a0b2e 50%, #091326 100%); color: #f0f6fc; font-family: "Courier New", Courier, monospace, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        #game-container { position: relative; width: 100%; max-width: 460px; height: 100%; max-height: 840px; background: rgba(18, 22, 34, 0.95); backdrop-filter: blur(8px); border: 3px solid #f1c40f; display: flex; flex-direction: column; overflow: hidden; }
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 20%, rgba(30, 20, 50, 0.85) 0%, rgba(10, 14, 23, 0.98) 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 25px; text-align: center; z-index: 10; overflow-y: auto; }
+        .hidden { display: none !important; }
+        h1 { color: #f1c40f; margin-bottom: 12px; font-size: 22px; text-shadow: 2px 2px #d35400; }
+        p { color: #8b949e; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+        .btn { background: linear-gradient(135deg, #d35400, #e67e22); color: #fff; border: 2px solid #f1c40f; padding: 12px 18px; font-size: 13px; font-weight: bold; border-radius: 8px; cursor: pointer; margin: 6px 0; width: 100%; max-width: 300px; }
+        .btn-secondary { background: linear-gradient(135deg, #1b2430, #253342); border-color: #58a6ff; color: #58a6ff; }
+        .menu-full { width: 100%; max-width: 300px; margin: 5px 0; }
+        input { width: 100%; max-width: 300px; padding: 14px 16px; margin: 10px 0; background: #07090f; border: 2px solid #30363d; color: white; border-radius: 8px; font-size: 14px; text-align: center; }
+        #rpg-screen { justify-content: flex-start; padding: 12px; text-align: left; }
+        .hud-panel { background: rgba(22, 27, 34, 0.9); border: 2px solid #f1c40f; border-radius: 8px; padding: 10px 12px; width: 100%; margin-bottom: 8px; font-size: 11px; }
+        .bar-bg { width: 100%; height: 6px; background: #07090f; border-radius: 3px; overflow: hidden; margin-top: 3px; border: 1px solid #444; }
+        #hp-bar { width: 100%; height: 100%; background: #e74c3c; transition: width 0.2s; }
+        .battle-arena { width: 100%; height: 110px; background: radial-gradient(circle at center, #26183b 0%, #0f071a 70%, #050308 100%); border: 2px solid #e74c3c; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-around; align-items: center; position: relative; }
+        .fighter-box { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 45%; height: 100%; }
+        .fighter-avatar { font-size: 34px; }
+        .fighter-name { color: #f1c40f; font-weight: bold; font-size: 11px; margin-top: 4px; text-align: center; }
+        #log-box { flex: 1; width: 100%; background: rgba(7, 9, 15, 0.95); border: 2px solid #30363d; border-radius: 8px; padding: 10px; overflow-y: auto; font-size: 11px; line-height: 1.4; color: #c9d1d9; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px; }
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+        .action-btn { background: #1b222d; border: 2px solid #58a6ff; color: #58a6ff; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer; text-align: center; font-size: 11px; }
+        .cards-container { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 320px; max-height: 360px; overflow-y: auto; }
+        .card { background: rgba(22, 27, 34, 0.9); border: 2px solid #f1c40f; border-radius: 8px; padding: 12px 14px; text-align: left; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div id="game-container">
+    <div id="login-screen" class="screen">
+        <h1>🇭🇰 港風天堂生存 RPG</h1>
+        <p>安全登入：新舊玩家請直接輸入名稱登入</p>
+        <input type="text" id="username-input" placeholder="輸入冒險者名稱">
+        <button class="btn" onclick="Game.login()">登入帳號</button>
+    </div>
+
+    <div id="menu-screen" class="screen hidden">
+        <h1 id="welcome-msg" style="font-size: 20px; margin-bottom: 4px;">江湖大廳</h1>
+        <p id="player-stats" style="margin-bottom: 12px;">帳號: 玩家 | 等級: Lv.1</p>
+        <button class="btn menu-full" onclick="Game.startAdventure()">🚀 開始江湖冒險</button>
+        <button class="btn menu-full" onclick="Game.gacha()" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); border-color: #9b59b6;">🎰 信和扭蛋機 (500💰)</button>
+        <button class="btn menu-full" onclick="Game.shareWhatsApp()" style="background: linear-gradient(135deg, #27ae60, #2ecc71); border-color: #2ecc71;">📲 炫耀戰績 (WhatsApp)</button>
+        <button class="btn btn-secondary menu-full" onclick="Game.openStatusPage()">🛡️ 屬性與裝備</button>
+    </div>
+
+    <div id="status-screen" class="screen hidden">
+        <h1>📊 角色屬性與裝備</h1>
+        <p>攻擊力: <span id="st-atk"></span> | 防禦力: <span id="st-def"></span></p>
+        <div class="cards-container" id="inventory-list"></div>
+        <button class="btn btn-secondary" onclick="Game.backToMenu()">返回大廳</button>
+    </div>
+
+    <div id="rpg-screen" class="screen hidden">
+        <div class="hud-panel">
+            <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 3px;">
+                <span id="rpg-name">冒險者</span>
+                <span id="rpg-gold">💰 0</span>
+            </div>
+            <div>血量 (HP): <span id="rpg-hp-text">100/100</span></div>
+            <div class="bar-bg"><div id="hp-bar"></div></div>
+        </div>
+
+        <div class="battle-arena">
+            <div class="fighter-box">
+                <div class="fighter-avatar">☕</div>
+                <div class="fighter-name" id="player-display-info">水吧佬</div>
+            </div>
+            <div style="color: #f1c40f; font-weight: bold; font-size: 16px;">VS</div>
+            <div class="fighter-box">
+                <div class="fighter-avatar" id="monster-avatar-icon">💧</div>
+                <div class="fighter-name" id="monster-display-info">探索中...</div>
+            </div>
+        </div>
+
+        <div id="log-box"></div>
+
+        <div class="action-grid" id="action-panel">
+            <button class="action-btn" id="btn-explore" onclick="Game.explore()">🔍 探索 / 隨機事件</button>
+            <button class="action-btn" onclick="Game.normalAttack()" style="border-color:#2ecc71; color:#2ecc71;">⚔️ 普通攻擊</button>
+            <button class="action-btn" onclick="Game.rest()">🍵 冰室歎茶</button>
+            <button class="action-btn" onclick="Game.backToMenu()" style="border-color:#e74c3c; color:#ff7b72;">🚪 返回大廳</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const Game = {
+    user: { username: '', hp: 100, maxHp: 100, gold: 1000, atk: 25, def: 10, inventory: [] },
+    currentMonster: null,
+    weatherModifier: 1,
+
+    login() {
+        let uInput = document.getElementById('username-input').value.trim();
+        if (!uInput) return alert('請輸入名稱！');
+        this.user.username = uInput;
+        this.toMenu();
+    },
+    toMenu() {
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('menu-screen').classList.remove('hidden');
+        document.getElementById('welcome-msg').innerText = `歡迎返嚟，${this.user.username}！`;
+        document.getElementById('player-stats').innerText = `等級: Lv.1 | 💰 ${this.user.gold}`;
+    },
+    startAdventure() {
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('rpg-screen').classList.remove('hidden');
+        document.getElementById('rpg-name').innerText = this.user.username;
+        this.updateHud();
+        this.log(`🚀 【${this.user.username}】進入咗江湖！`, 'log-success');
+    },
+    updateHud() {
+        document.getElementById('rpg-gold').innerText = `💰 ${this.user.gold}`;
+        document.getElementById('rpg-hp-text').innerText = `${this.user.hp}/${this.user.maxHp}`;
+        document.getElementById('hp-bar').style.width = Math.max(0, (this.user.hp/this.user.maxHp)*100) + '%';
+        let exploreBtn = document.getElementById('btn-explore');
+        if (this.currentMonster) {
+            exploreBtn.innerText = '⚔️ 戰鬥中';
+            exploreBtn.disabled = true;
+        } else {
+            exploreBtn.innerText = '🔍 探索';
+            exploreBtn.disabled = false;
+        }
+    },
+    log(text, c='log-msg') {
+        let b = document.getElementById('log-box');
+        b.innerHTML += `<div class="${c}" style="border-left: 3px solid #58a6ff; padding-left: 6px; margin-bottom: 4px;">${text}</div>`;
+        b.scrollTop = b.scrollHeight;
+    },
+    explore() {
+        if(this.currentMonster) return;
+        this.weatherModifier = 1;
+        if(Math.random() < 0.15) {
+            this.weatherModifier = 2;
+            this.log('🌪️ 警告！突然掛起八號風球！怪獸變強，但金幣雙倍！', 'log-warning');
+        }
+        let monsters = [{name:'冷氣機滴水怪', icon:'💧', hp:50, atk:12, gold:30}, {name:'暴走大強', icon:'🪳', hp:40, atk:10, gold:20}];
+        let m = monsters[Math.floor(Math.random()*monsters.length)];
+        this.currentMonster = { ...m, hp: m.hp * this.weatherModifier, atk: m.atk * this.weatherModifier, gold: m.gold * this.weatherModifier };
+        document.getElementById('monster-avatar-icon').innerText = m.icon;
+        document.getElementById('monster-display-info').innerText = `${this.currentMonster.name} (${this.currentMonster.hp}HP)`;
+        this.log(`⚔️ 遭遇【${this.currentMonster.name}】！強制戰鬥鎖定！`, 'log-warning');
+        this.updateHud();
+    },
+    normalAttack() {
+        if(!this.currentMonster) return;
+        let dmg = this.user.atk + Math.floor(Math.random()*10);
+        this.currentMonster.hp -= dmg;
+        this.log(`💥 對【${this.currentMonster.name}】造成 ${dmg} 傷害！`);
+        if(this.currentMonster.hp <= 0) {
+            this.log(`🎯 擊敗【${this.currentMonster.name}】！獲得 💰${this.currentMonster.gold}`, 'log-success');
+            this.user.gold += this.currentMonster.gold;
+            this.currentMonster = null;
+            document.getElementById('monster-avatar-icon').innerText = '✨';
+            document.getElementById('monster-display-info').innerText = '安全';
+        } else {
+            document.getElementById('monster-display-info').innerText = `${this.currentMonster.name} (${this.currentMonster.hp}HP)`;
+            let mDmg = Math.max(1, this.currentMonster.atk - this.user.def);
+            this.user.hp -= mDmg;
+            this.log(`⚠️ 怪獸反擊，你受到 ${mDmg} 傷害。`, 'log-warning');
+            if(this.user.hp <= 0) {
+                alert('你被打低咗！');
+                this.user.hp = this.user.maxHp;
+                this.currentMonster = null;
+                this.toMenu();
+            }
+        }
+        this.updateHud();
+    },
+    rest() {
+        if(this.user.gold < 30) return alert('金幣不足');
+        this.user.gold -= 30;
+        this.user.hp = this.user.maxHp;
+        this.log('🍵 飲咗杯凍檸茶，血量全滿！', 'log-success');
+        this.updateHud();
+    },
+    gacha() {
+        if(this.user.gold < 500) return alert('金幣不足 500！');
+        this.user.gold -= 500;
+        let items = ['藍色・古惑仔開山刀 (+10攻擊)', '紫色・紅Van軚盤盾 (+15防禦)', '金色・李氏力場護盾 (+30防禦)'];
+        let item = items[Math.floor(Math.random()*items.length)];
+        this.user.inventory.push(item);
+        alert(`🎰 扭蛋成功！恭喜獲得：${item}！`);
+        this.toMenu();
+    },
+    openStatusPage() {
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('status-screen').classList.remove('hidden');
+        document.getElementById('st-atk').innerText = this.user.atk;
+        document.getElementById('st-def').innerText = this.user.def;
+        let list = document.getElementById('inventory-list');
+        list.innerHTML = this.user.inventory.length ? this.user.inventory.map(i => `<div class='card'>${i}</div>`).join('') : '<p>倉庫空空如也</p>';
+    },
+    shareWhatsApp() {
+        let text = `我喺《港風天堂 RPG》已經成為咗香港英雄！我手持【${this.user.inventory[0]||'新手裝備'}】，快啲一齊入嚟冒險啦！`;
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`);
+    },
+    backToMenu() { this.toMenu(); }
+};
+</script>
+</body>
+</html>
