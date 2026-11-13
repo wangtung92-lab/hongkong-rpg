@@ -4,180 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>港風天堂生存 RPG・終極爆款版</title>
-    <style>
-        * { box-sizing: border-box; user-select: none; }
-        body {
-            margin: 0; padding: 0;
-            background: linear-gradient(135deg, #0f051d 0%, #1a0b2e 50%, #091326 100%);
-            color: #f0f6fc;
-            font-family: "Courier New", Courier, monospace, sans-serif;
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; overflow: hidden;
-        }
-        #game-container {
-            position: relative;
-            width: 100%; max-width: 460px;
-            height: 100%; max-height: 840px;
-            background: rgba(18, 22, 34, 0.95);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 0 40px rgba(231, 76, 60, 0.25), inset 0 0 20px rgba(88, 166, 255, 0.1);
-            display: flex; flex-direction: column;
-            border: 3px solid #f1c40f;
-            overflow: hidden;
-        }
-        #game-container::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
-            background: linear-gradient(90deg, #e74c3c, #f1c40f, #3498db, #9b59b6);
-            animation: neonGlow 3s linear infinite;
-        }
-        @keyframes neonGlow {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
-        }
-
-        .screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 20%, rgba(30, 20, 50, 0.85) 0%, rgba(10, 14, 23, 0.98) 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 25px; text-align: center; z-index: 10;
-            overflow-y: auto;
-        }
-        .hidden { display: none !important; }
-
-        h1 { 
-            color: #f1c40f; margin-bottom: 12px; font-size: 22px; 
-            text-shadow: 2px 2px #d35400, 0 0 10px rgba(241, 196, 15, 0.6); 
-            letter-spacing: 1px;
-        }
-        p { color: #8b949e; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
-        
-        .btn {
-            background: linear-gradient(135deg, #d35400, #e67e22);
-            color: #fff; border: 2px solid #f1c40f; padding: 12px 18px;
-            font-size: 13px; font-weight: bold; border-radius: 8px;
-            cursor: pointer; margin: 6px 0; width: 100%; max-width: 300px;
-            box-shadow: 0 4px 15px rgba(211, 84, 0, 0.4);
-            font-family: inherit; transition: transform 0.1s;
-        }
-        .btn:active { transform: scale(0.96); }
-        .btn-secondary { background: linear-gradient(135deg, #1b2430, #253342); border-color: #58a6ff; color: #58a6ff; }
-        
-        .menu-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 300px; margin: 6px 0;
-        }
-        .menu-grid .btn { width: 100%; max-width: none; margin: 0; padding: 10px; font-size: 11px; }
-        .menu-full { width: 100%; max-width: 300px; margin: 5px 0; }
-
-        input {
-            width: 100%; max-width: 300px; padding: 14px 16px;
-            margin: 10px 0; background: #07090f; border: 2px solid #30363d;
-            color: white; border-radius: 8px; font-size: 14px; text-align: center;
-            font-family: inherit;
-        }
-        input:focus { border-color: #f1c40f; outline: none; box-shadow: 0 0 8px rgba(241,196,15,0.4); }
-
-        #rpg-screen { justify-content: flex-start; padding: 12px; text-align: left; }
-        .hud-panel {
-            background: rgba(22, 27, 34, 0.9); border: 2px solid #f1c40f; border-radius: 8px;
-            padding: 10px 12px; width: 100%; margin-bottom: 8px; font-size: 11px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-        }
-        .bar-bg { width: 100%; height: 6px; background: #07090f; border-radius: 3px; overflow: hidden; margin-top: 3px; border: 1px solid #444; }
-        #hp-bar { width: 100%; height: 100%; background: #e74c3c; transition: width 0.2s; }
-        #exp-bar { width: 0%; height: 100%; background: #3498db; transition: width 0.2s; }
-        #mp-bar { width: 100%; height: 100%; background: #f1c40f; transition: width 0.2s; }
-
-        .battle-arena {
-            width: 100%; height: 110px; 
-            background: radial-gradient(circle at center, #26183b 0%, #0f071a 70%, #050308 100%);
-            border: 2px solid #e74c3c; border-radius: 8px; margin-bottom: 8px;
-            display: flex; justify-content: space-around; align-items: center; position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 15px rgba(231, 76, 60, 0.3);
-        }
-        .fighter-box {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 45%; height: 100%;
-        }
-        .fighter-avatar {
-            font-size: 34px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
-            animation: floatAnim 2s ease-in-out infinite;
-        }
-        @keyframes floatAnim {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
-        }
-        .fighter-name { color: #f1c40f; font-weight: bold; font-size: 11px; margin-top: 4px; text-align: center; }
-
-        #log-box {
-            flex: 1; width: 100%; background: rgba(7, 9, 15, 0.95); border: 2px solid #30363d;
-            border-radius: 8px; padding: 10px; overflow-y: auto; font-size: 11px;
-            line-height: 1.4; color: #c9d1d9; margin-bottom: 8px; display: flex; flex-direction: column; gap: 4px;
-        }
-        .log-msg { border-left: 3px solid #58a6ff; padding-left: 6px; }
-        .log-warning { border-left-color: #e74c3c; color: #ff7b72; }
-        .log-success { border-left-color: #2ea043; color: #7ee787; }
-        .log-gold { border-left-color: #f1c40f; color: #f1e05a; }
-        .log-event { border-left-color: #bc8cff; color: #d2a8ff; }
-        .log-gear { border-left-color: #e67e22; color: #f39c12; font-weight: bold; }
-
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
-        .action-btn {
-            background: #1b222d; border: 2px solid #58a6ff; color: #58a6ff;
-            padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer;
-            text-align: center; font-size: 11px; font-family: inherit;
-        }
-        .action-btn:hover { background: #263140; border-color: #f1c40f; color: #f1c40f; }
-
-        .cards-container { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 320px; max-height: 360px; overflow-y: auto; }
-        .card {
-            background: rgba(22, 27, 34, 0.9); border: 2px solid #f1c40f; border-radius: 8px;
-            padding: 12px 14px; text-align: left; cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-        }
-        .card:hover { background: rgba(33, 38, 45, 0.95); transform: translateY(-2px); }
-        .card h3 { margin: 0 0 4px 0; color: #f1c40f; font-size: 13px; }
-        .card p { margin: 0; color: #8b949e; font-size: 11px; }
-        .card.locked { opacity: 0.5; border-color: #444; cursor: not-allowed; }
-        
-        .rarity-blue { color: #58a6ff; }
-        .rarity-purple { color: #bc8cff; text-shadow: 0 0 5px rgba(188,140,255,0.5); }
-        .rarity-gold { color: #f1c40f; text-shadow: 0 0 8px rgba(241,196,15,0.8); }
-
-        .status-box {
-            background: rgba(13, 17, 23, 0.95); border: 2px solid #58a6ff; border-radius: 8px;
-            padding: 12px; width: 100%; max-width: 340px; text-align: left; margin-bottom: 10px;
-        }
-        .status-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #30363d; font-size: 11px; }
-        .equip-slot { background: #161b22; border: 1px solid #f1c40f; padding: 8px 10px; border-radius: 8px; margin-bottom: 6px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
-
-        #modal-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center;
-            z-index: 100;
-        }
-        .modal-box {
-            background: #161b22; border: 3px solid #2ecc71; border-radius: 12px;
-            padding: 24px; width: 85%; max-width: 300px; text-align: center;
-            box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
-        }
-        .modal-box h2 { color: #2ecc71; margin-top: 0; margin-bottom: 10px; font-size: 18px; }
-        .modal-box p { color: #fff; font-size: 12px; margin-bottom: 16px; line-height: 1.5; }
-        
-        .gacha-animation {
-            animation: shake 0.5s ease-in-out infinite;
-        }
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px) rotate(-5deg); }
-            50% { transform: translateX(5px) rotate(5deg); }
-            75% { transform: translateX(-5px) rotate(-5deg); }
-            100% { transform: translateX(0); }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <div id="game-container">
     <!-- 1. 登入畫面 -->
     <div id="login-screen" class="screen">
@@ -186,12 +15,220 @@
         <input type="text" id="username-input" placeholder="輸入帳號 (例如: 旺角揸fit人)">
         <input type="password" id="password-input" placeholder="輸入密碼 (必填防盜)">
         <button class="btn" onclick="Game.login()">登入帳號冒險</button>
+        <button class="btn btn-secondary" style="margin-top:8px; border-color:#2ecc71; color:#2ecc71;" onclick="Game.quickPlay()">⚡ 快速試玩（無需密碼）</button>
     </div>
 
-    <!-- Rest of the full game content is being restored. For immediate play use the previous good commit link. -->
+    <!-- 2. 選擇職業畫面 -->
+    <div id="job-screen" class="screen hidden">
+        <h1>選擇你的港風英雄拍檔</h1>
+        <div class="cards-container">
+            <div class="card" onclick="Game.selectJob('茶記水吧佬')">
+                <h3>☕ 茶記水吧佬</h3>
+                <p><b>專屬技能：</b>特濃鴛鴦海嘯（範圍攻擊兼回血）</p>
+            </div>
+            <div class="card" onclick="Game.selectJob('地盤真漢子')">
+                <h3>🧱 地盤真漢子</h3>
+                <p><b>專屬技能：</b>震地打樁衝擊（超高破防重擊）</p>
+            </div>
+            <div class="card" onclick="Game.selectJob('紅Van車神')">
+                <h3>🚐 紅Van車神</h3>
+                <p><b>專屬技能：</b>盲亨飄移連擊（高暴擊、高速切入）</p>
+            </div>
+            <div class="card" onclick="Game.selectJob('屋邨師奶')">
+                <h3>🛒 屋邨師奶</h3>
+                <p><b>專屬技能：</b>紅膠袋結界（防禦護盾、自動吸金）</p>
+            </div>
+            <div class="card" onclick="Game.selectJob('外賣步兵')">
+                <h3>⚡ 外賣步兵</h3>
+                <p><b>專屬技能：</b>閃電急速斬擊（超高閃避與連擊）</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 主選單大廳 -->
+    <div id="menu-screen" class="screen hidden">
+        <h1 id="welcome-msg" style="font-size: 20px; margin-bottom: 4px;">江湖大廳</h1>
+        <p id="player-stats" style="margin-bottom: 12px;">帳號: 玩家 | 等級: Lv.1</p>
+        
+        <button class="btn menu-full" onclick="Game.startAdventure()">🚀 開始江湖冒險</button>
+        <button class="btn menu-full" style="background: linear-gradient(135deg, #8e44ad, #9b59b6); border-color: #9b59b6;" onclick="Game.openGacha()">🎰 信和中心扭蛋機 (抽神裝)</button>
+        
+        <div class="menu-grid">
+            <button class="btn btn-secondary" onclick="Game.openStatusPage()">🛡️ 屬性裝備</button>
+            <button class="btn btn-secondary" onclick="Game.openChapterSelect()">🗺️ 章節地圖</button>
+            <button class="btn btn-secondary" onclick="Game.openFriends()">👥 江湖好友</button>
+            <button class="btn btn-secondary" onclick="Game.openLeaderboard()">🏆 英雄榜</button>
+        </div>
+        
+        <button class="btn btn-secondary menu-full" style="margin-top: 4px;" onclick="Game.openShop()">🍵 冰室茶餐廳補給</button>
+        
+        <div style="display: flex; gap: 8px; width: 100%; max-width: 300px;">
+            <button class="btn btn-secondary" style="flex: 1;" onclick="Sound.toggleBgm()" id="bgm-btn">🎵 音樂: 關閉</button>
+            <button class="btn btn-secondary" style="flex: 1; border-color: #25D366; color: #25D366;" onclick="Game.shareToWhatsApp()">📲 炫耀戰績</button>
+        </div>
+    </div>
+
+    <!-- 4. 屬性與裝備畫面 -->
+    <div id="status-screen" class="screen hidden">
+        <h1>📊 角色屬性與裝備管理</h1>
+        <div class="status-box">
+            <div style="color: #f1c40f; font-weight: bold; margin-bottom: 6px; font-size: 12px;">✨ 能力屬性</div>
+            <div class="status-row"><span>等級 (Level):</span> <b id="st-lvl" style="color: #2ea043;">1</b></div>
+            <div class="status-row"><span>攻擊力 (ATK):</span> <b id="st-atk" style="color: #f1c40f;">25</b></div>
+            <div class="status-row"><span>防禦力 (DEF):</span> <b id="st-def" style="color: #58a6ff;">10</b></div>
+            <div class="status-row"><span>暴擊率 (CRIT):</span> <b id="st-crit" style="color: #ff7b72;">5%</b></div>
+            <div class="status-row"><span>閃避率 (DODGE):</span> <b id="st-dodge" style="color: #bc8cff;">5%</b></div>
+            <div class="status-row"><span>幸運值 (LUCK):</span> <b id="st-luck" style="color: #f1e05a;">10</b></div>
+        </div>
+
+        <div class="status-box">
+            <div style="color: #f1c40f; font-weight: bold; margin-bottom: 6px; font-size: 12px;">🎒 目前裝備槽位</div>
+            <div class="equip-slot">
+                <div><b>武器：</b> <span id="eq-weapon" style="color:#f1c40f;">無</span></div>
+                <button class="btn-secondary" style="padding: 4px 8px; font-size:10px;" onclick="Game.openInventory('weapon')">更換</button>
+            </div>
+            <div class="equip-slot">
+                <div><b>防具：</b> <span id="eq-armor" style="color:#58a6ff;">普通T恤</span></div>
+                <button class="btn-secondary" style="padding: 4px 8px; font-size:10px;" onclick="Game.openInventory('armor')">更換</button>
+            </div>
+            <div class="equip-slot">
+                <div><b>飾品：</b> <span id="eq-accessory" style="color:#bc8cff;">無</span></div>
+                <button class="btn-secondary" style="padding: 4px 8px; font-size:10px;" onclick="Game.openInventory('accessory')">更換</button>
+            </div>
+        </div>
+
+        <button class="btn btn-secondary" style="width: 100%; max-width: 340px;" onclick="Game.backToMenu()">返回大廳</button>
+    </div>
+
+    <!-- 5. 倉庫畫面 -->
+    <div id="inventory-screen" class="screen hidden">
+        <h1>📦 江湖裝備倉庫</h1>
+        <p id="inv-title">請選擇要裝備的物品：</p>
+        <div class="cards-container" id="inventory-list" style="max-height: 300px; margin-bottom: 10px;"></div>
+        <button class="btn btn-secondary" style="width: 100%; max-width: 320px;" onclick="Game.openStatusPage()">返回屬性頁</button>
+    </div>
+
+    <!-- 6. 好友畫面 (模擬連線) -->
+    <div id="friend-screen" class="screen hidden">
+        <h1>👥 江湖好友系統</h1>
+        <p>你的專屬序號：<span id="my-uid" style="color: #f1c40f; font-weight: bold;"></span></p>
+        <input type="text" id="friend-input" placeholder="輸入朋友嘅玩家序號 (例如: #8829)">
+        <button class="btn" onclick="Game.addFriend()">加好友 / 邀請</button>
+        <div id="friend-list" class="cards-container" style="margin-top: 8px; max-height: 180px;"></div>
+        <button class="btn btn-secondary" style="margin-top: 8px; width: 100%; max-width: 320px;" onclick="Game.backToMenu()">返回大廳</button>
+    </div>
+
+    <!-- 7. 排行榜畫面 -->
+    <div id="leaderboard-screen" class="screen hidden">
+        <h1>🏆 香港江湖英雄榜</h1>
+        <div id="leaderboard-list" class="cards-container" style="max-height: 300px; margin-bottom: 10px;"></div>
+        <button class="btn btn-secondary" style="width: 100%; max-width: 320px;" onclick="Game.backToMenu()">返回大廳</button>
+    </div>
+
+    <!-- 8. 章節地圖畫面 -->
+    <div id="chapter-screen" class="screen hidden">
+        <h1>🗺️ 港九四大章節地圖</h1>
+        <div class="cards-container" id="chapter-cards-container"></div>
+        <button class="btn btn-secondary" style="margin-top: 8px; width: 100%; max-width: 320px;" onclick="Game.backToMenu()">返回大廳</button>
+    </div>
+
+    <!-- 9. 戰鬥畫面 -->
+    <div id="rpg-screen" class="screen hidden">
+        <div class="hud-panel">
+            <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 3px;">
+                <span id="rpg-name">冒險者</span>
+                <span id="rpg-job-tag">職業</span>
+                <span id="rpg-gold">💰 0</span>
+            </div>
+            <div>血量 (HP): <span id="rpg-hp-text">100/100</span></div>
+            <div class="bar-bg"><div id="hp-bar"></div></div>
+            <div style="display: flex; justify-content: space-between; margin-top: 3px; font-size: 10px;">
+                <span>氣力 (MP)</span>
+                <span id="rpg-mp-text">50/50</span>
+            </div>
+            <div class="bar-bg" style="height: 5px;"><div id="mp-bar"></div></div>
+            <div style="margin-top: 3px; display: flex; justify-content: space-between;">
+                <span>經驗值 (EXP):</span>
+                <span id="rpg-exp-text" style="font-size: 9px; color: #8b949e;">0/100</span>
+            </div>
+            <div class="bar-bg" style="height: 4px;"><div id="exp-bar"></div></div>
+        </div>
+
+        <div class="battle-arena">
+            <div class="fighter-box">
+                <div class="fighter-avatar" id="player-avatar-icon">☕</div>
+                <div class="fighter-name" id="player-display-info">水吧佬</div>
+            </div>
+            <div style="color: #f1c40f; font-weight: bold; font-size: 16px; text-shadow: 0 0 10px #d35400;">VS</div>
+            <div class="fighter-box">
+                <div class="fighter-avatar" id="monster-avatar-icon">🐗</div>
+                <div class="fighter-name" id="monster-display-info">探索中...</div>
+            </div>
+        </div>
+
+        <div id="log-box"></div>
+
+        <div class="action-grid" id="action-panel">
+            <button class="action-btn" id="btn-explore" onclick="Game.explore()">🔍 探索 / 隨機事件</button>
+            <button class="action-btn" onclick="Game.normalAttack()" style="border-color:#2ecc71; color:#2ecc71;">⚔️ 普通攻擊</button>
+            <button class="action-btn" onclick="Game.useSpecialSkill()" style="border-color:#f1c40f; color:#f1c40f;">⚡ 釋放專屬技能</button>
+            <button class="action-btn" onclick="Game.rest()">🍵 冰室歎茶</button>
+            <button class="action-btn" onclick="Game.backToMenu()" style="border-color:#e74c3c; color:#ff7b72; grid-column: span 2;">🚪 返回大廳</button>
+        </div>
+    </div>
+
+    <!-- 10. 升級畫面 -->
+    <div id="upgrade-screen" class="screen hidden">
+        <h1>🌟 江湖突破・實力提升</h1>
+        <p>恭喜升級！請選擇一項天賦加成：</p>
+        <div class="cards-container" id="upgrade-options"></div>
+    </div>
+
+    <!-- 11. 冰室補給商店 -->
+    <div id="shop-screen" class="screen hidden">
+        <h1>🍵 冰室茶餐廳補給</h1>
+        <p>購買美食恢復體力，或使用特殊道具增強戰力！</p>
+        <div class="cards-container">
+            <div class="card" onclick="Game.buyItem('菠蘿包', 40, 50, 'hp')">
+                <h3>🍍 鮮油菠蘿包 (售價: 💰40)</h3>
+                <p>即時恢復 50 點血量。</p>
+            </div>
+            <div class="card" onclick="Game.buyItem('特濃鴛鴦', 70, 15, 'atk')">
+                <h3>☕ 特濃絲襪鴛鴦 (售價: 💰70)</h3>
+                <p>永久提升攻擊力 +15。</p>
+            </div>
+            <div class="card" onclick="Game.buyItem('金牌菠蘿油', 120, 35, 'atk')">
+                <h3>🌟 金牌至尊菠蘿油 (售價: 💰120)</h3>
+                <p>極品茶記美味，永久攻擊力 +35！</p>
+            </div>
+            <div class="card" onclick="Game.buyItem('紅Van特快證', 100, 20, 'dodge')">
+                <h3>🚐 紅Van特快通行證 (售價: 💰100)</h3>
+                <p>靈活走位，閃避率永久提升 +10%！</p>
+            </div>
+        </div>
+        <button class="btn btn-secondary" style="margin-top: 10px; width: 100%; max-width: 320px;" onclick="Game.backToMenu()">返回大廳</button>
+    </div>
+
+    <!-- 12. 信和中心扭蛋機 -->
+    <div id="gacha-screen" class="screen hidden">
+        <h1>🎰 信和中心扭蛋機</h1>
+        <p>每次花費 💰500 金幣，有機會抽出傳說級神裝！</p>
+        <div style="font-size: 60px; margin: 20px 0;" id="gacha-machine">🎰</div>
+        <div id="gacha-result" style="height: 60px; font-weight: bold; margin-bottom: 20px;"></div>
+        <button class="btn" style="background: linear-gradient(135deg, #8e44ad, #9b59b6); border-color: #9b59b6;" onclick="Game.rollGacha()">💰 投入 500 金幣抽獎</button>
+        <button class="btn btn-secondary" style="margin-top: 10px; width: 100%; max-width: 320px;" onclick="Game.backToMenu()">返回大廳</button>
+    </div>
+
+    <!-- 每日簽到彈窗 -->
+    <div id="modal-overlay" class="hidden">
+        <div class="modal-box">
+            <h2>🎁 每日簽到成功！</h2>
+            <p id="modal-text">今日獲得豐富補給獎勵！</p>
+            <button class="btn" onclick="Game.closeModal()">太好了，收下！</button>
+        </div>
+    </div>
 </div>
-<script>
-// Full Game object will be restored in next step
-</script>
+
+<script src="game.js"></script>
 </body>
 </html>
